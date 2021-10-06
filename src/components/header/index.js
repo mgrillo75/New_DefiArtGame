@@ -15,8 +15,11 @@ const Header = () => {
   const wallet = useWallet();
 
   //Ethers setup
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  const signer = provider.getSigner();
+  let signer, provider;
+  if(window.ethereum){
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    signer = provider.getSigner();
+  }
 
   // Modal Hooks
   const [show, setShow] = useState(true);
@@ -96,7 +99,10 @@ const Header = () => {
             <button
               className="btn-metamask"
               onClick={() => {
-                wallet.connect();
+                let val = wallet.connect();
+                if (val == null){
+                  window.open("https://metamask.io/download");
+                }
                 handleShow();
               }}
             >
