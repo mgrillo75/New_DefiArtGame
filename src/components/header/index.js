@@ -24,10 +24,6 @@ const Header = () => {
     }
   });
 
-  //Ethers setup
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  const signer = provider.getSigner();
-
   // Modal Hooks
   const [show, setShow] = useState(true);
 
