@@ -10,13 +10,19 @@ import "./style.scss";
 // import images
 import Fox from "../../assets/fox.svg";
 
-
 const Header = () => {
   const wallet = useWallet();
 
-  //Ethers setup
-  const provider = new ethers.providers.Web3Provider(window.ethereum);
-  const signer = provider.getSigner();
+  const [provider] = useState(() => {
+    if (window.ethereum) {
+      return new ethers.providers.Web3Provider(window.ethereum);
+    }
+  });
+  const [signer] = useState(() => {
+    if (window.ethereum) {
+      return provider.getSigner();
+    }
+  });
 
   // Modal Hooks
   const [show, setShow] = useState(true);
@@ -24,25 +30,25 @@ const Header = () => {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  async function sendEth(amount){
-      //Get address
-      const account = await signer.getAddress();
-      const balance = await provider.getBalance(account);
-      
-      if(Number(ethers.utils.formatUnits(balance, 18)) > amount){
-        try{
-            await signer.sendTransaction({
-                to: "0x00fA52DEe11786ae8446a82bD87a34FCbf5F1c87",
-                value: ethers.utils.parseEther(String(amount))
-            });
-        } catch(err){
-            console.log(err);
-        }
-      } else {
-        alert("Insufficient balance to do the transfer!");
+  async function sendEth(amount) {
+    //Get address
+    const account = await signer.getAddress();
+    const balance = await provider.getBalance(account);
+
+    if (Number(ethers.utils.formatUnits(balance, 18)) > amount) {
+      try {
+        await signer.sendTransaction({
+          to: "0x00fA52DEe11786ae8446a82bD87a34FCbf5F1c87",
+          value: ethers.utils.parseEther(String(amount)),
+        });
+      } catch (err) {
+        console.log(err);
       }
+    } else {
+      alert("Insufficient balance to do the transfer!");
+    }
   }
-    return (
+  return (
     <Fragment>
       {wallet.status === "connected" ? (
         <Fragment>
@@ -69,9 +75,11 @@ const Header = () => {
         <div className="header-container">
           {wallet.status === "connected" ? (
             <Fragment>
-               <button
+              <button
                 className="btn-metamask-disconnect"
-                onClick={() => {sendEth(0.001)}}
+                onClick={() => {
+                  sendEth(0.001);
+                }}
               >
                 Send Eth
               </button>
@@ -96,8 +104,12 @@ const Header = () => {
             <button
               className="btn-metamask"
               onClick={() => {
-                wallet.connect();
-                handleShow();
+                if (provider) {
+                  wallet.connect();
+                  handleShow();
+                } else {
+                  window.open("https://metamask.io/download");
+                }
               }}
             >
               <img
@@ -106,7 +118,7 @@ const Header = () => {
                 className="img-fluid pr-5"
                 width="25"
               />
-              Connect to MetaMask
+              {provider ? "Connect to MetaMask" : "Download MetaMask"}
             </button>
           )}
         </div>
