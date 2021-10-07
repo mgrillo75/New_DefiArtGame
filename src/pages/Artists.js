@@ -1,4 +1,4 @@
-import { React, useState, useEffect } from "react";
+import { React, useState } from "react";
 
 // import styles
 import "./style.css";
@@ -25,12 +25,6 @@ const ArtistsWrapper = () => {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
-        <label>TBD:</label>
-        <textarea
-          required
-          value={body}
-          onChange={(e) => setBody(e.target.value)}
-        ></textarea>
         <label>Parking Level:</label>
         <select
           value={author}

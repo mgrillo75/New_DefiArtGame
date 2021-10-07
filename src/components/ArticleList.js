@@ -17,6 +17,7 @@ function ArticleList(props) {
                 <h2>{article.title}</h2>
                 <p>{article.body}</p>
                 <p>{article.date}</p>
+                <p>{article.deposit}</p>
 
                 <div className = "row">
                     <div className = "col-md-1">

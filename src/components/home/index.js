@@ -4,6 +4,20 @@ import { Link } from "react-router-dom";
 // import styles
 import "./style.scss";
 
+/*
+   <div className="btn-wrapper">
+            <div className="btn-artists text-center">
+              <Link to="/artists">Artists - Creators</Link>
+            </div>
+            <div className="btn-buyers text-center">
+              <Link to="/buyers">Buyers - Collectors</Link>
+            </div>
+          </div>
+
+          Where NFTs meet DeFi in a Virtual Arcade
+
+*/
+
 const Home = () => {
   return (
     <Fragment>
@@ -14,19 +28,10 @@ const Home = () => {
           </h2>
           <h1 className="title text-center">DeFi Art Game</h1>
           <p className="text text-center">
-            Where NFTs meet DeFi in a Virtual Arcade
+            
+              Current Rewards Pool:
           </p>
-          <div className="btn-wrapper">
-            <div className="btn-artists text-center">
-              <Link to="/artists">Artists - Creators</Link>
-            </div>
-            <div className="btn-buyers text-center">
-              <Link to="/buyers">Buyers - Collectors</Link>
-            </div>
-          </div>
-          <div className="btn-liquidity text-center mt-5">
-            <Link to="/buyers">Liquidity Providers</Link>
-          </div>
+       
         </div>
       </div>
     </Fragment>

@@ -11,7 +11,7 @@ function DBase() {
     const [editedArticle, setEditedArticle] = useState(null)
   
     useEffect(() => {
-      fetch('http://127.0.0.1:5000/get', {
+      fetch('https://5455536.defiartgame.com:5000/get', {
         'method':'GET',
         headers: {
           'Content-Type':'application/json'
@@ -29,17 +29,51 @@ function DBase() {
       setEditedArticle(article)
     }
 
-    //<ArticleList articles = {articles} editArticle = {editArticle}/>
-    //<ArticleList articles = {articles}/>
+    const updatedData = (article) => {
+      const new_article = articles.map(my_article => {
+        if(my_article.id === article.id) {
+          return article
+        } else {
+          return my_article
+        }
+      })
+      setArticles(new_article)
+    }
+
+    const openForm =() => {
+      setEditedArticle({title:'', body:''})
+    }
+
+    const insertedArticle = (article) => {
+      const new_articles = [...articles, article]
+      setArticles(new_articles)
+
+    }
 
     return (
       <div className="DBase">
+
+        <div className = "col"
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center"
+        }}
+
+        >
+          <button
+          className = "btn btn-success"
+          onClick = {openForm}
+          >Park NFT</button>
+        </div>
+
+
         <br/>
         <br/>
 
         <ArticleList articles = {articles} editArticle = {editArticle}/>
 
-        {editedArticle ? <Form article = {editedArticle}/> : null}
+        {editedArticle ? <Form article = {editedArticle} updatedData = {updatedData} insertedArticle = {insertedArticle}/> : null}
         
       
     </div>
