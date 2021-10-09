@@ -24,6 +24,18 @@ const Header = () => {
     }
   });
 
+  const sdk = require('api')('@opensea/v1.0#gbq4cz1cksxopxqw');
+
+  sdk['getting-assets']({
+    owner: '0x00fA52DEe11786ae8446a82bD87a34FCbf5F1c87',
+    order_direction: 'desc',
+    offset: '0',
+    limit: '20'
+  })
+  .then(res => console.log(res))
+  .catch(err => console.error(err));
+  
+  
   // Modal Hooks
   const [show, setShow] = useState(true);
 
