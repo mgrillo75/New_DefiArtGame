@@ -13,6 +13,7 @@ import Fox from "../../assets/fox.svg";
 
 const Header = () => {
   const wallet = useWallet();
+  const [assets, setAssets] = useState([]);
 
   const [provider] = useState(() => {
     if (window.ethereum) {
@@ -39,7 +40,7 @@ const Header = () => {
             },
           }
         );
-        console.log(data);
+        setAssets(data);
       } catch (error) {
         console.log(error);
       }
