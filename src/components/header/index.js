@@ -1,8 +1,9 @@
 /* eslint-disable import/no-anonymous-default-export */
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import { useWallet, UseWalletProvider } from "use-wallet";
 import Modal from "react-bootstrap/Modal";
 import { ethers } from "ethers";
+import axios from "axios";
 
 // import style
 import "./style.scss";
@@ -24,18 +25,28 @@ const Header = () => {
     }
   });
 
-  const sdk = require('api')('@opensea/v1.0#gbq4cz1cksxopxqw');
+  useEffect(() => {
+    const fetchAssets = async () => {
+      try {
+        const { data } = await axios.get(
+          "https://api.opensea.io/api/v1/assets",
+          {
+            params: {
+              owner: "0x00fA52DEe11786ae8446a82bD87a34FCbf5F1c87",
+              order_direction: "desc",
+              offset: "0",
+              limit: "20",
+            },
+          }
+        );
+        console.log(data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchAssets();
+  }, []);
 
-  sdk['getting-assets']({
-    owner: '0x00fA52DEe11786ae8446a82bD87a34FCbf5F1c87',
-    order_direction: 'desc',
-    offset: '0',
-    limit: '20'
-  })
-  .then(res => console.log(res))
-  .catch(err => console.error(err));
-  
-  
   // Modal Hooks
   const [show, setShow] = useState(true);
 
