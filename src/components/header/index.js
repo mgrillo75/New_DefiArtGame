@@ -33,7 +33,7 @@ const Header = () => {
           "https://api.opensea.io/api/v1/assets",
           {
             params: {
-              owner: "0x00fA52DEe11786ae8446a82bD87a34FCbf5F1c87",
+              owner: "0x00fA52DEe11786ae8446a82bD87a34FCbf5F1c87", //remove this hard code and replace with address variable of connected user's wallet
               order_direction: "desc",
               offset: "0",
               limit: "20",
