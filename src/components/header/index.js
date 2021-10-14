@@ -1,9 +1,8 @@
 /* eslint-disable import/no-anonymous-default-export */
-import React, { Fragment, useState, useEffect } from "react";
+import React, { Fragment, useState } from "react";
 import { useWallet, UseWalletProvider } from "use-wallet";
 import Modal from "react-bootstrap/Modal";
 import { ethers } from "ethers";
-import axios from "axios";
 
 // import style
 import "./style.scss";
@@ -11,59 +10,8 @@ import "./style.scss";
 // import images
 import Fox from "../../assets/fox.svg";
 
-const Header = () => {
+const Header = ({ signer, provider, currentAccount }) => {
   const wallet = useWallet();
-  const [assets, setAssets] = useState([]);
-  const [currentAccount, setCurrentAccount] = useState([""]);
-
-  const [provider] = useState(() => {
-    if (window.ethereum) {
-      return new ethers.providers.Web3Provider(window.ethereum);
-    }
-  });
-  const [signer] = useState(() => {
-    if (window.ethereum) {
-      return provider.getSigner();
-    }
-  });
-
-  useEffect(() => {
-    const fetchAssets = async () => {
-      try {
-        const { data } = await axios.get(
-          "https://api.opensea.io/api/v1/assets",
-          {
-            params: {
-              owner: currentAccount[0].toString(), //remove this hard code and replace with address variable of connected user's wallet
-              order_direction: "desc",
-              offset: "0",
-              limit: "20",
-            },
-          }
-        );
-        setAssets(data);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    fetchAssets();
-  }, [currentAccount]);
-
-  useEffect(() => {
-    const walletCheck = async () => {
-      const { ethereum } = window;
-
-      if (!ethereum) return;
-
-      try {
-        const accounts = await ethereum.request({ method: "eth_accounts" });
-        setCurrentAccount(accounts);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    walletCheck();
-  }, []);
 
   // Modal Hooks
   const [show, setShow] = useState(true);
@@ -160,6 +108,7 @@ const Header = () => {
                 className="img-fluid pr-5"
                 width="25"
               />
+
               {provider ? "Connect to MetaMask" : "Download MetaMask"}
             </button>
           )}
@@ -170,7 +119,7 @@ const Header = () => {
 };
 
 // Wrap everything in <UseWalletProvider />
-export default () => (
+export default ({ signer, provider, currentAccount }) => (
   <UseWalletProvider
     chainId={1}
     connectors={{
@@ -180,6 +129,10 @@ export default () => (
       portis: { dAppId: "my-dapp-id-123-xyz" },
     }}
   >
-    <Header />
+    <Header
+      signer={signer}
+      provider={provider}
+      currentAccount={currentAccount}
+    />
   </UseWalletProvider>
 );
