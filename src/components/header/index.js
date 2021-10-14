@@ -14,6 +14,7 @@ import Fox from "../../assets/fox.svg";
 const Header = () => {
   const wallet = useWallet();
   const [assets, setAssets] = useState([]);
+  const [currentAccount, setCurrentAccount] = useState([""]);
 
   const [provider] = useState(() => {
     if (window.ethereum) {
@@ -33,7 +34,7 @@ const Header = () => {
           "https://api.opensea.io/api/v1/assets",
           {
             params: {
-              owner: "0x00fA52DEe11786ae8446a82bD87a34FCbf5F1c87", //remove this hard code and replace with address variable of connected user's wallet
+              owner: currentAccount[0].toString(), //remove this hard code and replace with address variable of connected user's wallet
               order_direction: "desc",
               offset: "0",
               limit: "20",
@@ -46,6 +47,22 @@ const Header = () => {
       }
     };
     fetchAssets();
+  }, [currentAccount]);
+
+  useEffect(() => {
+    const walletCheck = async () => {
+      const { ethereum } = window;
+
+      if (!ethereum) return;
+
+      try {
+        const accounts = await ethereum.request({ method: "eth_accounts" });
+        setCurrentAccount(accounts);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    walletCheck();
   }, []);
 
   // Modal Hooks
@@ -56,13 +73,14 @@ const Header = () => {
 
   async function sendEth(amount) {
     //Get address
+
     const account = await signer.getAddress();
     const balance = await provider.getBalance(account);
 
     if (Number(ethers.utils.formatUnits(balance, 18)) > amount) {
       try {
         await signer.sendTransaction({
-          to: "0x00fA52DEe11786ae8446a82bD87a34FCbf5F1c87",
+          to: currentAccount[0].toString(),
           value: ethers.utils.parseEther(String(amount)),
         });
       } catch (err) {
