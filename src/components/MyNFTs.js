@@ -33,7 +33,7 @@ const MyNFTs = ({ currentAccount }) => {
       }
     };
     fetchAssets();
-  }, []);
+  }, [currentAccount]);
 
   return (
     <div
