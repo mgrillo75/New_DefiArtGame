@@ -7,12 +7,12 @@ const MyNFTs = ({ currentAccount }) => {
   useEffect(() => {
     const fetchAssets = async () => {
       try {
-        if (currentAccount[0].length === 0) {
+        if (currentAccount[0].length > 0) {
           const { data } = await axios.get(
             "https://api.opensea.io/api/v1/assets",
             {
               params: {
-                owner: "0xb2ebc9b3a788afb1e942ed65b59e9e49a1ee500d",
+                owner: currentAccount[0].toString(),
                 order_direction: "desc",
                 offset: "0",
                 limit: "20",
@@ -20,9 +20,10 @@ const MyNFTs = ({ currentAccount }) => {
             }
           );
           const filterAssets = data.assets.filter((asset) => {
-            if (asset.name && asset.token_id && asset.image_url) {
-              return asset;
+            if (!asset.name || !asset.token_id || !asset.image_url) {
+              return null;
             }
+            return asset;
           });
 
           setAssets(filterAssets);
@@ -43,31 +44,29 @@ const MyNFTs = ({ currentAccount }) => {
         justifyContent: "center",
       }}
     >
-      {assets.length > 0
-        ? assets.map((asset) => {
-            return (
-              <div key={asset.token_id}>
-                <div class="card">
-                  <div class="card-top">
-                    <h1>{asset.name}</h1>
-                    <div>
-                      <div class="card-body">
-                        {asset.image_url.length > 0 ? (
-                          <img src={asset.image_url} alt="nft" />
-                        ) : (
-                          "No Image Available"
-                        )}
-                        {}
-                        <h3>Description</h3>
-                        {asset.description}
-                      </div>
+      {assets.length > 0 ? (
+        assets.map((asset) => {
+          return (
+            <div key={asset.token_id}>
+              <div class="card">
+                <div class="card-top">
+                  <h1>{asset.name}</h1>
+                  <div>
+                    <div class="card-body">
+                      <img src={asset.image_url} alt="nft" />
+
+                      <h3>Description</h3>
+                      {asset.description}
                     </div>
                   </div>
                 </div>
               </div>
-            );
-          })
-        : "No NFTs On OpenSea"}
+            </div>
+          );
+        })
+      ) : (
+        <h1>No NFTs On OpenSea</h1>
+      )}
 
       {console.log(assets)}
     </div>
