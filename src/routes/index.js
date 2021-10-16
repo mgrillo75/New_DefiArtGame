@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { ethers } from "ethers";
 
 // import pages
 import Home from "../pages/Home";
@@ -13,17 +12,6 @@ import MyNFTs from "../components/MyNFTs";
 
 const MainRouter = () => {
   const [currentAccount, setCurrentAccount] = useState([""]);
-
-  const [provider] = useState(() => {
-    if (window.ethereum) {
-      return new ethers.providers.Web3Provider(window.ethereum);
-    }
-  });
-  const [signer] = useState(() => {
-    if (window.ethereum) {
-      return provider.getSigner();
-    }
-  });
 
   useEffect(() => {
     const walletCheck = async () => {
@@ -40,14 +28,15 @@ const MainRouter = () => {
     };
     walletCheck();
   }, []);
+
+  useEffect(() => {
+    console.log({ currentAccount });
+  }, [currentAccount]);
+
   return (
     <>
       <Router>
-        <Header
-          signer={signer}
-          provider={provider}
-          currentAccount={currentAccount}
-        />
+        <Header currentAccount={currentAccount} />
         <Route exact path="/" component={Home} />
         <Route exact path="/artists" component={Artists} />
         <Route exact path="/buyers" component={Buyers} />

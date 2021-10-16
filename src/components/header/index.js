@@ -1,6 +1,5 @@
 /* eslint-disable import/no-anonymous-default-export */
-import React, { Fragment, useState } from "react";
-import { useWallet, UseWalletProvider } from "use-wallet";
+import React, { Fragment, useState, useEffect, useCallback } from "react";
 import Modal from "react-bootstrap/Modal";
 import { ethers } from "ethers";
 
@@ -10,8 +9,101 @@ import "./style.scss";
 // import images
 import Fox from "../../assets/fox.svg";
 
-const Header = ({ signer, provider, currentAccount }) => {
-  const wallet = useWallet();
+import WalletConnectProvider from "@walletconnect/web3-provider";
+import Web3Modal from "web3modal";
+
+const INFURA_ID = "";
+
+const providerOptions = {
+  walletconnect: {
+    package: WalletConnectProvider,
+    options: {
+      infuraId: INFURA_ID,
+    },
+  },
+};
+
+const web3ModalMainnet = new Web3Modal({
+  network: "mainnet",
+  providerOptions,
+});
+
+const ConnectButton = ({ web3Modal, onProviderSelected, chainName }) => {
+  return (
+    <button
+      className="btn-metamask"
+      onClick={async () => {
+        console.log("on click...");
+        try {
+          const web3Provider = await web3Modal.connect();
+          console.log({ web3Provider });
+          // Subscribe to accounts change
+          web3Provider.on("accountsChanged", (accounts) => {
+            console.log({ accounts });
+          });
+
+          // Subscribe to chainId change
+          web3Provider.on("chainChanged", (chainId) => {
+            console.log({ chainId });
+          });
+
+          // Subscribe to provider connection
+          web3Provider.on("connect", (info) => {
+            console.log("connected..", info);
+            console.log({ info });
+          });
+
+          // Subscribe to provider disconnection
+          web3Provider.on("disconnect", (error) => {
+            console.log({ error });
+          });
+
+          onProviderSelected(web3Provider);
+        } catch (err) {
+          console.log("error while connecting wallet", err);
+        }
+      }}
+    >
+      <img src={Fox} alt="metamask-img" className="img-fluid pr-5" width="25" />
+      Connect to {chainName}
+    </button>
+  );
+};
+
+const Header = ({ currentAccount }) => {
+  const [provider, setProvider] = useState(null);
+  const [web3ModalProvider, setWeb3ModalProvider] = useState(null);
+  const [signer, setSigner] = useState(
+    provider !== null ? provider.getSigner() : null
+  );
+
+  useEffect(() => {
+    if (provider !== null) setSigner(provider.getSigner());
+    console.log({ provider });
+  }, [provider]);
+
+  const [address, setAddress] = useState("");
+  const [balance, setBalance] = useState(0);
+
+  useEffect(() => {
+    if (signer !== null) {
+      signer.getAddress().then((_address) => setAddress(_address));
+    }
+    console.log({ signer });
+  }, [signer]);
+
+  useEffect(() => {
+    if (provider !== null && address !== "") {
+      provider.getBalance(address).then((bal) => setBalance(bal));
+    }
+  }, [address, provider]);
+
+  useEffect(() => {
+    if (web3ModalProvider !== null) {
+      setProvider(new ethers.providers.Web3Provider(web3ModalProvider));
+    }
+    console.log({ web3ModalProvider });
+  }, [web3ModalProvider]);
 
   // Modal Hooks
   const [show, setShow] = useState(true);
@@ -38,9 +130,25 @@ const Header = ({ signer, provider, currentAccount }) => {
       alert("Insufficient balance to do the transfer!");
     }
   }
+
+  const logout = useCallback(async () => {
+    // await web3ModalBinance.clearCachedProvider();
+    await web3ModalMainnet.clearCachedProvider();
+    setWeb3ModalProvider(null);
+    setProvider(null);
+    setAddress("");
+    setBalance(0);
+  }, [web3ModalMainnet]);
+
+  const onProviderSelected = useCallback((_provider) => {
+    console.log("on provider selected");
+    setWeb3ModalProvider(_provider);
+    handleShow();
+  }, []);
+
   return (
     <Fragment>
-      {wallet.status === "connected" ? (
+      {provider !== null ? (
         <Fragment>
           <Modal show={show} onHide={handleClose}>
             <Modal.Header closeButton>
@@ -49,11 +157,11 @@ const Header = ({ signer, provider, currentAccount }) => {
             <Modal.Body>
               <div>
                 <h4>Account:</h4>
-                <p>{wallet.account}</p>
+                <p>{address}</p>
               </div>
               <div>
                 <h4>Balance:</h4>
-                <p>{wallet.balance}</p>
+                <p>{ethers.utils.formatEther(balance)}</p>
               </div>
             </Modal.Body>
           </Modal>
@@ -63,7 +171,7 @@ const Header = ({ signer, provider, currentAccount }) => {
       )}
       <div className="container">
         <div className="header-container">
-          {wallet.status === "connected" ? (
+          {provider !== null ? (
             <Fragment>
               <button
                 className="btn-metamask-disconnect"
@@ -76,7 +184,7 @@ const Header = ({ signer, provider, currentAccount }) => {
               <button
                 className="btn-metamask-disconnect"
                 onClick={() => {
-                  wallet.reset();
+                  logout();
                 }}
               >
                 Disconnect
@@ -91,26 +199,13 @@ const Header = ({ signer, provider, currentAccount }) => {
               </button>
             </Fragment>
           ) : (
-            <button
-              className="btn-metamask"
-              onClick={() => {
-                if (provider) {
-                  wallet.connect();
-                  handleShow();
-                } else {
-                  window.open("https://metamask.io/download");
-                }
-              }}
-            >
-              <img
-                src={Fox}
-                alt="metamask-img"
-                className="img-fluid pr-5"
-                width="25"
+            <>
+              <ConnectButton
+                chainName="Ethereum"
+                web3Modal={web3ModalMainnet}
+                onProviderSelected={onProviderSelected}
               />
-
-              {provider ? "Connect to MetaMask" : "Download MetaMask"}
-            </button>
+            </>
           )}
         </div>
       </div>
@@ -118,21 +213,4 @@ const Header = ({ signer, provider, currentAccount }) => {
   );
 };
 
-// Wrap everything in <UseWalletProvider />
-export default ({ signer, provider, currentAccount }) => (
-  <UseWalletProvider
-    chainId={1}
-    connectors={{
-      // This is how connectors get configured
-      // provided: {provided: window.CleanEthereum},
-      // portis: { dAppId: "my-dapp-id-123-xyz" },
-      portis: { dAppId: "my-dapp-id-123-xyz" },
-    }}
-  >
-    <Header
-      signer={signer}
-      provider={provider}
-      currentAccount={currentAccount}
-    />
-  </UseWalletProvider>
-);
+export default Header;

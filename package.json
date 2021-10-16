@@ -6,6 +6,7 @@
   "private": true,
   "dependencies": {
     "@babel/core": "^7.15.0",
+    "@walletconnect/web3-provider": "^1.6.6",
     "axios": "^0.22.0",
     "bootstrap": "^5.1.1",
     "cra-template": "1.1.2",
@@ -19,7 +20,8 @@
     "react-scripts": "^4.0.3",
     "sass": "^1.38.0",
     "use-wallet": "^0.9.0",
-    "web-vitals": "^2.1.0"
+    "web-vitals": "^2.1.0",
+    "web3modal": "^1.9.4"
   },
   "scripts": {
     "start": "react-scripts start",
