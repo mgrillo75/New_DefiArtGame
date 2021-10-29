@@ -10,15 +10,7 @@ import "./style.scss";
 // import images
 import Fox from "../../assets/fox.svg";
 
-const Header = ({ signer, provider, currentAccount }) => {
-  const wallet = useWallet();
-
-  // Modal Hooks
-  const [show, setShow] = useState(true);
-
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
-
+const Header = ({ signer, provider, currentAccount, setCurrentAccount }) => {
   async function sendEth(amount) {
     //Get address
 
@@ -39,100 +31,44 @@ const Header = ({ signer, provider, currentAccount }) => {
     }
   }
   return (
-    <Fragment>
-      {wallet.status === "connected" ? (
-        <Fragment>
-          <Modal show={show} onHide={handleClose}>
-            <Modal.Header closeButton>
-              <Modal.Title>Account Details</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <div>
-                <h4>Account:</h4>
-                <p>{wallet.account}</p>
-              </div>
-              <div>
-                <h4>Balance:</h4>
-                <p>{wallet.balance}</p>
-              </div>
-            </Modal.Body>
-          </Modal>
-        </Fragment>
-      ) : (
-        ""
-      )}
-      <div className="container">
-        <div className="header-container">
-          {wallet.status === "connected" ? (
-            <Fragment>
-              <button
-                className="btn-metamask-disconnect"
-                onClick={() => {
-                  sendEth(0.001);
-                }}
-              >
-                Send Eth
-              </button>
-              <button
-                className="btn-metamask-disconnect"
-                onClick={() => {
-                  wallet.reset();
-                }}
-              >
-                Disconnect
-              </button>
-              <button
-                className="btn-metamask-disconnect"
-                onClick={() => {
-                  handleShow();
-                }}
-              >
-                See Account Details
-              </button>
-            </Fragment>
-          ) : (
-            <button
-              className="btn-metamask"
-              onClick={() => {
-                if (provider) {
-                  wallet.connect();
-                  handleShow();
-                } else {
-                  window.open("https://metamask.io/download");
-                }
-              }}
-            >
-              <img
-                src={Fox}
-                alt="metamask-img"
-                className="img-fluid pr-5"
-                width="25"
-              />
+    <div className="container">
+      <div className="header-container">
+        {console.log(currentAccount)}
+        {currentAccount.length > 0 ? (
+          <button
+            className="btn-metamask-disconnect"
+            onClick={() => {
+              setCurrentAccount([]);
+            }}
+          >
+            Disconnect
+          </button>
+        ) : (
+          <button
+            className="btn-metamask"
+            onClick={async () => {
+              if (provider) {
+                const account = await provider.send("eth_requestAccounts", []);
+                setCurrentAccount(account);
+              } else {
+                window.open("https://metamask.io/download");
+              }
+            }}
+          >
+            <img
+              src={Fox}
+              alt="metamask-img"
+              className="img-fluid pr-5"
+              width="25"
+            />
 
-              {provider ? "Connect to MetaMask" : "Download MetaMask"}
-            </button>
-          )}
-        </div>
+            {provider ? "Connect to MetaMask" : "Download MetaMask"}
+          </button>
+        )}
       </div>
-    </Fragment>
+    </div>
   );
 };
 
 // Wrap everything in <UseWalletProvider />
-export default ({ signer, provider, currentAccount }) => (
-  <UseWalletProvider
-    chainId={1}
-    connectors={{
-      // This is how connectors get configured
-      // provided: {provided: window.CleanEthereum},
-      // portis: { dAppId: "my-dapp-id-123-xyz" },
-      portis: { dAppId: "my-dapp-id-123-xyz" },
-    }}
-  >
-    <Header
-      signer={signer}
-      provider={provider}
-      currentAccount={currentAccount}
-    />
-  </UseWalletProvider>
-);
+export default Header;

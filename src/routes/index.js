@@ -12,7 +12,7 @@ import Header from "../components/header";
 import MyNFTs from "../components/MyNFTs";
 
 const MainRouter = () => {
-  const [currentAccount, setCurrentAccount] = useState([""]);
+  const [currentAccount, setCurrentAccount] = useState([]);
 
   const [provider] = useState(() => {
     if (window.ethereum) {
@@ -20,7 +20,7 @@ const MainRouter = () => {
     }
   });
   const [signer] = useState(() => {
-    if (window.ethereum) {
+    if (window.ethereum && provider) {
       return provider.getSigner();
     }
   });
@@ -31,8 +31,11 @@ const MainRouter = () => {
 
       if (!ethereum) return;
 
+      // if (acc) sessionStorage.setItem();
+
       try {
         const accounts = await ethereum.request({ method: "eth_accounts" });
+        console.log(accounts);
         setCurrentAccount(accounts);
       } catch (error) {
         console.log(error);
@@ -47,6 +50,7 @@ const MainRouter = () => {
           signer={signer}
           provider={provider}
           currentAccount={currentAccount}
+          setCurrentAccount={setCurrentAccount}
         />
         <Route exact path="/" component={Home} />
         <Route exact path="/artists" component={Artists} />

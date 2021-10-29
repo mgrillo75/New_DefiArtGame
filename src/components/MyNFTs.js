@@ -6,28 +6,27 @@ const MyNFTs = ({ currentAccount }) => {
   const [assets, setAssets] = useState([]);
   useEffect(() => {
     const fetchAssets = async () => {
+      if (currentAccount.length === 0) return;
       try {
-        if (currentAccount[0].length > 0) {
-          const { data } = await axios.get(
-            "https://api.opensea.io/api/v1/assets",
-            {
-              params: {
-                owner: currentAccount[0].toString(),
-                order_direction: "desc",
-                offset: "0",
-                limit: "20",
-              },
-            }
-          );
-          const filterAssets = data.assets.filter((asset) => {
-            if (!asset.name || !asset.token_id || !asset.image_url) {
-              return null;
-            }
-            return asset;
-          });
+        const { data } = await axios.get(
+          "https://api.opensea.io/api/v1/assets",
+          {
+            params: {
+              owner: currentAccount[0].toString(),
+              order_direction: "desc",
+              offset: "0",
+              limit: "20",
+            },
+          }
+        );
+        const filterAssets = data.assets.filter((asset) => {
+          if (!asset.name || !asset.token_id || !asset.image_url) {
+            return null;
+          }
+          return asset;
+        });
 
-          setAssets(filterAssets);
-        }
+        setAssets(filterAssets);
       } catch (error) {
         console.log(error);
       }
@@ -52,11 +51,15 @@ const MyNFTs = ({ currentAccount }) => {
                 <div class="card-top">
                   <h1>{asset.name}</h1>
                   <div>
-                    <div class="card-body">
+                    <div class="card-body mb-4">
                       <img src={asset.image_url} alt="nft" />
-
-                      <h3>Description</h3>
-                      {asset.description}
+                      <div className="mb-4">
+                        <h3>Description</h3>
+                        {asset.description}
+                      </div>
+                      <button className="btn btn-success btn-large">
+                        Park NFT
+                      </button>
                     </div>
                   </div>
                 </div>
