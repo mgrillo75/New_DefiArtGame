@@ -1,6 +1,5 @@
-
-import React, {useState, useEffect} from 'react'
-import APIService from './APIService'
+import React, { useState, useEffect } from "react";
+// import APIService from './APIService'
 
 /*
 
@@ -49,43 +48,35 @@ import APIService from './APIService'
 */
 
 function ReadData() {
+  const [getMessage, setGetMessage] = useState([]);
 
-    const [getMessage, setGetMessage] = useState([])
+  useEffect(() => {
+    fetch(`https://5455536.defiartgame.com:5000/get/12/`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((resp) => resp.json())
+      //.then(resp => console.log(resp))
+      .then((resp) => setGetMessage(resp))
+      .catch((error) => console.log(error));
+  }, []);
 
-    useEffect(() => {
-      fetch(`https://5455536.defiartgame.com:5000/get/12/`, {
-            'method':'GET',
-            headers: {
-              'Content-Type':'application/json'
-            }
-          })
-          .then(resp => resp.json())
-          //.then(resp => console.log(resp))
-          .then(resp =>setGetMessage(resp))
-          .catch(error => console.log(error))
+  return (
+    <div className="ReadData">
+      <div
+        className="col"
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <h1>${getMessage.deposit}</h1>
+      </div>
+    </div>
+  );
+}
 
-        },[])
-
-    return (
-
-      <div className="ReadData">
-
-      <div className = "col"
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center"
-              }}>
-
-                  <h1>${getMessage.deposit}</h1>
-
-               </div>
-
-               
-
-               </div>
-
-        );
-  }
-  
-  export default ReadData
+export default ReadData;

@@ -1,35 +1,36 @@
-/* eslint-disable import/no-anonymous-default-export */
-
-import { ethers } from "ethers";
+// import { ethers } from "ethers";
 import { useHistory } from "react-router-dom";
-
+import { useStoreActions, useStoreState } from "easy-peasy";
 // import style
 import "./style.scss";
 
 // import images
 import Fox from "../../assets/fox.svg";
 
-const Header = ({ signer, provider, currentAccount, setCurrentAccount }) => {
+const Header = ({ signer, provider }) => {
   const history = useHistory();
-  async function sendEth(amount) {
-    //Get address
+  const setCurrentAccount = useStoreActions((actions) => actions.wallet.update);
+  const clearAccount = useStoreActions((actions) => actions.wallet.clear);
+  const currentAccount = useStoreState((state) => state.wallet.accounts);
+  // async function sendEth(amount) {
+  //   //Get address
 
-    const account = await signer.getAddress();
-    const balance = await provider.getBalance(account);
+  //   const account = await signer.getAddress();
+  //   const balance = await provider.getBalance(account);
 
-    if (Number(ethers.utils.formatUnits(balance, 18)) > amount) {
-      try {
-        await signer.sendTransaction({
-          to: currentAccount[0].toString(),
-          value: ethers.utils.parseEther(String(amount)),
-        });
-      } catch (err) {
-        console.log(err);
-      }
-    } else {
-      alert("Insufficient balance to do the transfer!");
-    }
-  }
+  //   if (Number(ethers.utils.formatUnits(balance, 18)) > amount) {
+  //     try {
+  //       await signer.sendTransaction({
+  //         to: currentAccount[0].toString(),
+  //         value: ethers.utils.parseEther(String(amount)),
+  //       });
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   } else {
+  //     alert("Insufficient balance to do the transfer!");
+  //   }
+  // }
   return (
     <div className="container">
       <div className="header-container">
@@ -48,7 +49,7 @@ const Header = ({ signer, provider, currentAccount, setCurrentAccount }) => {
           <button
             className="btn-metamask-disconnect"
             onClick={() => {
-              setCurrentAccount([]);
+              clearAccount();
             }}
           >
             Disconnect

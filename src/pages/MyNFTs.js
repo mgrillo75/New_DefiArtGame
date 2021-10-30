@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
+import { useStoreState } from "easy-peasy";
 import axios from "axios";
-import "./gallery/card.css";
-
-const MyNFTs = ({ currentAccount }) => {
+import "../components/gallery/card.css";
+const MyNFTs = () => {
+  const currentAccount = useStoreState((state) => state.wallet.accounts);
   const [assets, setAssets] = useState([]);
   useEffect(() => {
     console.log("current account", currentAccount);
     const fetchAssets = async () => {
-      if (currentAccount.length === 0) {
+      if (currentAccount.length[0] === 0) {
         setAssets([]);
         return;
       }
