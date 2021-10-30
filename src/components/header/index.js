@@ -1,8 +1,7 @@
 /* eslint-disable import/no-anonymous-default-export */
-import React, { Fragment, useState } from "react";
-import { useWallet, UseWalletProvider } from "use-wallet";
-import Modal from "react-bootstrap/Modal";
+
 import { ethers } from "ethers";
+import { useHistory } from "react-router-dom";
 
 // import style
 import "./style.scss";
@@ -11,6 +10,7 @@ import "./style.scss";
 import Fox from "../../assets/fox.svg";
 
 const Header = ({ signer, provider, currentAccount, setCurrentAccount }) => {
+  const history = useHistory();
   async function sendEth(amount) {
     //Get address
 
@@ -33,6 +33,16 @@ const Header = ({ signer, provider, currentAccount, setCurrentAccount }) => {
   return (
     <div className="container">
       <div className="header-container">
+        <button className="btn btn-success" onClick={() => history.push("/")}>
+          Home
+        </button>
+        <button
+          className="btn btn-success"
+          onClick={() => history.push("/mynfts")}
+        >
+          My NFTs
+        </button>
+
         {console.log(currentAccount)}
         {currentAccount.length > 0 ? (
           <button
@@ -70,5 +80,4 @@ const Header = ({ signer, provider, currentAccount, setCurrentAccount }) => {
   );
 };
 
-// Wrap everything in <UseWalletProvider />
 export default Header;

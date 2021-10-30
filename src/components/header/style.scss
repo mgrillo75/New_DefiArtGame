@@ -1,7 +1,15 @@
 .header-container {
   padding-top: 30px;
   text-align: right;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: flex-end;
+  margin-bottom: 2rem;
 
+  button {
+    margin-right: 1rem;
+  }
   .btn-metamask {
     border: 1px solid #fa7139;
     background: #fa7139;

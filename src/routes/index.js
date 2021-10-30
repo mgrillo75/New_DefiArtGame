@@ -25,24 +25,6 @@ const MainRouter = () => {
     }
   });
 
-  useEffect(() => {
-    const walletCheck = async () => {
-      const { ethereum } = window;
-
-      if (!ethereum) return;
-
-      // if (acc) sessionStorage.setItem();
-
-      try {
-        const accounts = await ethereum.request({ method: "eth_accounts" });
-        console.log(accounts);
-        setCurrentAccount(accounts);
-      } catch (error) {
-        console.log(error);
-      }
-    };
-    walletCheck();
-  }, []);
   return (
     <>
       <Router>

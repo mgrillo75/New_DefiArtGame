@@ -5,8 +5,12 @@ import "./gallery/card.css";
 const MyNFTs = ({ currentAccount }) => {
   const [assets, setAssets] = useState([]);
   useEffect(() => {
+    console.log("current account", currentAccount);
     const fetchAssets = async () => {
-      if (currentAccount.length === 0) return;
+      if (currentAccount.length === 0) {
+        setAssets([]);
+        return;
+      }
       try {
         const { data } = await axios.get(
           "https://api.opensea.io/api/v1/assets",
