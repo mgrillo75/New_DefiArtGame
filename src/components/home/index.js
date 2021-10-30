@@ -1,6 +1,7 @@
 import React, { Fragment } from "react";
-import { Link } from "react-router-dom";
 
+import ReadDBase from "../../components/ReadDBase";
+import ReadData from "../../components/ReadData";
 // import styles
 import "./style.scss";
 
@@ -27,13 +28,11 @@ const Home = () => {
             coordinated-crypto-art-skunk-pools
           </h2>
           <h1 className="title text-center">DeFi Art Game</h1>
-          <p className="text text-center">
-            
-              Current Rewards Pool:
-          </p>
-       
+          <p className="text text-center">Current Rewards Pool:</p>
         </div>
       </div>
+      <ReadData />
+      <ReadDBase />
     </Fragment>
   );
 };

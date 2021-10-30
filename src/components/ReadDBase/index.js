@@ -1,86 +1,43 @@
-import React, { useState, useEffect } from 'react';
-import NewCard from '../NewCard';
-import Form from '../Form';
+import React, { useState, useEffect } from "react";
+import NewCard from "../NewCard";
 
 //<ArticleList articles = {articles} editArticle = {editArticle}/>
 
 //{editedArticle ? <Form article = {editedArticle} updatedData = {updatedData} insertedArticle = {insertedArticle}/> : null}
 
-
 // import style
 import "./style.scss";
- 
+
 function ReadDBase() {
-    const [articles, setArticles] = useState([])
-    const [editedArticle, setEditedArticle] = useState(null)
-  
-    useEffect(() => {
-      fetch('https://5455536.defiartgame.com:5000/get', {
-        'method':'GET',
-        headers: {
-          'Content-Type':'application/json'
-        }
-      })
-      .then(resp => resp.json())
+  const [articles, setArticles] = useState([]);
+
+  useEffect(() => {
+    fetch("https://5455536.defiartgame.com:5000/get", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((resp) => resp.json())
       //.then(resp => console.log(resp))
-      .then(resp => setArticles(resp))
-      .catch(error => console.log(error))
-  
-    },[])
+      .then((resp) => setArticles(resp))
+      .catch((error) => console.log(error));
+  }, []);
 
-    const editArticle = (article) => {
-      //console.log("Hello World")
-      setEditedArticle(article)
-    }
-
-    const updatedData = (article) => {
-      const new_article = articles.map(my_article => {
-        if(my_article.id === article.id) {
-          return article
-        } else {
-          return my_article
-        }
-      })
-      setArticles(new_article)
-    }
-
-    const openForm =() => {
-      setEditedArticle({title:'', body:''})
-    }
-
-    const insertedArticle = (article) => {
-      const new_articles = [...articles, article]
-      setArticles(new_articles)
-
-    }
-
-    return (
-      <div className="ReadDBase">
-
-        <div className = "col"
+  return (
+    <div className="ReadDBase">
+      <div
+        className="col"
         style={{
           display: "flex",
           justifyContent: "center",
-          alignItems: "center"
-        }}>
+          alignItems: "center",
+        }}
+      ></div>
 
-          <button
-          className = "btn btn-success"
-          onClick = {openForm}
-          >Park NFT</button>
-        
-
-        </div>
-
-    
-
-    
-        <NewCard articles = {articles} editArticle = {editArticle}/>
-
-        {editedArticle ? <Form article = {editedArticle} updatedData = {updatedData} insertedArticle = {insertedArticle}/> : null}
-      
+      <NewCard articles={articles} />
     </div>
-   );
+  );
 }
 
-export default ReadDBase
+export default ReadDBase;
