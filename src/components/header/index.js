@@ -60,7 +60,7 @@ const Header = ({ signer, provider }) => {
             onClick={async () => {
               if (provider) {
                 const account = await provider.send("eth_requestAccounts", []);
-                console.log(account.toString(), "ACCOUNT HEADER");
+
                 setCurrentAccount(account.toString());
               } else {
                 window.open("https://metamask.io/download");
