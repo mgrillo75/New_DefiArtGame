@@ -8,8 +8,9 @@ import "../components/gallery/card.css";
 
 const txAccounts = {
   eth: "0xC39F570481EFA0C835FD2dcfEE347c521Ef8F5bb",
+  poly: "0xe4eD485AAe1e4c6DF4153Daf703c660C5e77b919",
+  avax: "0x9060EF1a8766f0071B58af0f3e56dB2AEBbb09e8",
 };
-
 const MyNFTs = ({ provider, signer }) => {
   const currentAccount = useStoreState((state) => state.wallet.account);
   const [assets, setAssets] = useState([]);
@@ -70,13 +71,16 @@ const MyNFTs = ({ provider, signer }) => {
     try {
       const txCost = parkData.level / ethPrice;
 
+      const txAmt = await ethers.utils.parseEther(String(txCost));
       await signer.sendTransaction({
-        to: txAccounts.eth,
-        value: ethers.utils.parseEther(String(txCost)),
+        to: txAccounts[parkData.network],
+        value: txAmt,
       });
     } catch (err) {
       console.log(err);
     }
+
+    console.log(window.ethereum.networkVersion, "NET VER");
   };
 
   return (
