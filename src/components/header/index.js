@@ -16,21 +16,7 @@ const Header = ({ signer, provider }) => {
   //   //Get address
 
   //   const account = await signer.getAddress();
-  //   const balance = await provider.getBalance(account);
 
-  //   if (Number(ethers.utils.formatUnits(balance, 18)) > amount) {
-  //     try {
-  //       await signer.sendTransaction({
-  //         to: currentAccount[0].toString(),
-  //         value: ethers.utils.parseEther(String(amount)),
-  //       });
-  //     } catch (err) {
-  //       console.log(err);
-  //     }
-  //   } else {
-  //     alert("Insufficient balance to do the transfer!");
-  //   }
-  // }
   return (
     <div className="container">
       <div className="header-container">
@@ -60,7 +46,6 @@ const Header = ({ signer, provider }) => {
             onClick={async () => {
               if (provider) {
                 const account = await provider.send("eth_requestAccounts", []);
-
                 setCurrentAccount(account.toString());
               } else {
                 window.open("https://metamask.io/download");

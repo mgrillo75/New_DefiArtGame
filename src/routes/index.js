@@ -32,7 +32,7 @@ const MainRouter = () => {
         <Route exact path="/buyers" component={Buyers} />
         <Route exact path="/liquidity" component={Liquidity} />
         <Route exact path="/mynfts">
-          <MyNFTs />
+          <MyNFTs provider={provider} signer={signer} />
         </Route>
       </Router>
     </>
