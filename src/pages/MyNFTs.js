@@ -3,21 +3,24 @@ import { useStoreState } from "easy-peasy";
 import axios from "axios";
 import "../components/gallery/card.css";
 const MyNFTs = () => {
-  const currentAccount = useStoreState((state) => state.wallet.accounts);
+  const currentAccount = useStoreState((state) => state.wallet.account);
   const [assets, setAssets] = useState([]);
+  const [parkData, setParkData] = useState({
+    level: 0,
+    network: "",
+  });
   useEffect(() => {
-    console.log("current account", currentAccount);
     const fetchAssets = async () => {
-      if (currentAccount.length[0] === 0) {
-        setAssets([]);
-        return;
-      }
       try {
+        if (currentAccount.length === 0) {
+          setAssets([]);
+          return;
+        }
         const { data } = await axios.get(
           "https://api.opensea.io/api/v1/assets",
           {
             params: {
-              owner: currentAccount[0].toString(),
+              owner: currentAccount,
               order_direction: "desc",
               offset: "0",
               limit: "20",
@@ -57,11 +60,16 @@ const MyNFTs = () => {
                   <h1>{asset.name}</h1>
                   <div>
                     <div class="card-body mb-4">
-                      <img src={asset.image_url} alt="nft" />
+                      <img
+                        src={asset.image_url}
+                        alt="nft"
+                        className="img-fluid"
+                      />
                       <div className="mb-4">
-                        <h3>Description</h3>
+                        <h5>Description</h5>
                         {asset.description}
                       </div>
+                      <h5>Select Parking Garage Level:</h5>
                       <button className="btn btn-success btn-large">
                         Park NFT
                       </button>

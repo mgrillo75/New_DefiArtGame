@@ -11,7 +11,7 @@ const Header = ({ signer, provider }) => {
   const history = useHistory();
   const setCurrentAccount = useStoreActions((actions) => actions.wallet.update);
   const clearAccount = useStoreActions((actions) => actions.wallet.clear);
-  const currentAccount = useStoreState((state) => state.wallet.accounts);
+  const currentAccount = useStoreState((state) => state.wallet.account);
   // async function sendEth(amount) {
   //   //Get address
 
@@ -60,7 +60,8 @@ const Header = ({ signer, provider }) => {
             onClick={async () => {
               if (provider) {
                 const account = await provider.send("eth_requestAccounts", []);
-                setCurrentAccount(account);
+                console.log(account.toString(), "ACCOUNT HEADER");
+                setCurrentAccount(account.toString());
               } else {
                 window.open("https://metamask.io/download");
               }
