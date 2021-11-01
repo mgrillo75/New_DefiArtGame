@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useStoreState } from "easy-peasy";
 import axios from "axios";
-import { BigNumber } from "@ethersproject/bignumber";
+import Web3Modal from "web3modal";
 
 import { ethers } from "ethers";
 
@@ -15,6 +15,7 @@ const txAccounts = {
 const MyNFTs = () => {
   const currentAccount = useStoreState((state) => state.wallet.account);
   const [assets, setAssets] = useState([]);
+  const [error, setError] = useState("");
   const [parkData, setParkData] = useState({
     level: 0,
     network: "",
@@ -68,24 +69,24 @@ const MyNFTs = () => {
   };
   const handleSubmit = async () => {
     if (!window.ethereum) return window.open("https://metamask.io/download");
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-    try {
-      const txCost = await ethers.utils.parseEther(
-        (parkData.level / ethPrice).toString()
-      );
-      // console.log(txCost.toString());
 
-      console.log(txCost);
+    const web3Modal = new Web3Modal();
+    const connection = await web3Modal.connect();
+    const provider = new ethers.providers.Web3Provider(connection);
+
+    const signer = provider.getSigner();
+    const txInfo = (parkData.level / ethPrice).toFixed(18);
+
+    try {
+      const txCost = await ethers.utils.parseEther(txInfo);
+
       await signer.sendTransaction({
         to: txAccounts[parkData.network],
         value: txCost,
       });
     } catch (err) {
-      console.log(err);
+      setError(err.data.message);
     }
-
-    console.log(window.ethereum.networkVersion, "NET VER");
   };
 
   return (
@@ -97,7 +98,13 @@ const MyNFTs = () => {
         justifyContent: "center",
       }}
     >
-      {console.log(ethPrice)}
+      {error ? (
+        <div class="alert alert-danger" role="alert">
+          {error}
+        </div>
+      ) : (
+        ""
+      )}
       {assets.length > 0 ? (
         assets.map((asset) => {
           return (
@@ -128,6 +135,7 @@ const MyNFTs = () => {
                       id="inputGroupSelect01"
                       onChange={handleChange}
                       name="level"
+                      required
                     >
                       <option value=""></option>
                       <option value="10">$10</option>
@@ -135,26 +143,40 @@ const MyNFTs = () => {
                       <option value="50">$50</option>
                     </select>
                   </div>
-                  <div className="input-group mb-3  text-center">
-                    <div className="input-group-prepend">
-                      <label
-                        className="input-group-text"
-                        for="inputGroupSelect01"
-                      >
-                        Network
-                      </label>
-                    </div>
-                    <select
-                      className="custom-select"
-                      id="inputGroupSelect01 "
-                      onChange={handleChange}
-                      name="network"
+                  <div className="mb-4 w-100">
+                    <button
+                      className="btn btn-info mx-1"
+                      onClick={async () => {
+                        await window.ethereum.request({
+                          method: "wallet_switchEthereumChain",
+                          params: [{ chainId: "0x1" }],
+                        });
+                      }}
                     >
-                      <option value=""></option>
-                      <option value="avax">AVAX</option>
-                      <option value="poly">POLY</option>
-                      <option value="eth">ETH</option>
-                    </select>
+                      Ethereum
+                    </button>
+                    <button
+                      className="btn btn-primary"
+                      onClick={async () => {
+                        await window.ethereum.request({
+                          method: "wallet_switchEthereumChain",
+                          params: [{ chainId: "0x89" }],
+                        });
+                      }}
+                    >
+                      Polygon
+                    </button>
+                    <button
+                      className="btn btn-secondary mx-1"
+                      onClick={async () => {
+                        await window.ethereum.request({
+                          method: "wallet_switchEthereumChain",
+                          params: [{ chainId: "0xa86a" }],
+                        });
+                      }}
+                    >
+                      AVAX
+                    </button>
                   </div>
                   <button
                     className="btn btn-success btn-large"
