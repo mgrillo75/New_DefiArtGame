@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useStoreState } from "easy-peasy";
 import axios from "axios";
-import Web3Modal from "web3modal";
 
 import { ethers } from "ethers";
 
@@ -16,10 +15,8 @@ const MyNFTs = () => {
   const currentAccount = useStoreState((state) => state.wallet.account);
   const [assets, setAssets] = useState([]);
   const [error, setError] = useState("");
-  const [parkData, setParkData] = useState({
-    level: 0,
-    network: "",
-  });
+  const [network, setNetwork] = useState("eth");
+  const [level, setLevel] = useState(0);
   const [ethPrice, setEthPrice] = useState(0);
   useEffect(() => {
     const fetchAssets = async () => {
@@ -62,35 +59,32 @@ const MyNFTs = () => {
   }, [currentAccount]);
 
   const handleChange = (e) => {
-    setParkData((prevState) => ({
-      ...prevState,
-      [e.target.name]: e.target.value,
-    }));
+    setLevel(e.target.value);
   };
   const handleSubmit = async () => {
     if (!window.ethereum) return window.open("https://metamask.io/download");
 
-    const web3Modal = new Web3Modal();
-    const connection = await web3Modal.connect();
-    const provider = new ethers.providers.Web3Provider(connection);
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
 
     const signer = provider.getSigner();
-    const txInfo = (parkData.level / ethPrice).toFixed(18);
+    const txInfo = (Number(level) / ethPrice).toFixed(18);
 
     try {
       const txCost = await ethers.utils.parseEther(txInfo);
 
       await signer.sendTransaction({
-        to: txAccounts[parkData.network],
+        to: txAccounts[network],
         value: txCost,
       });
     } catch (err) {
-      setError(err.data.message);
+      console.log(err);
+      setError(err.message);
     }
   };
 
   return (
     <div
+      className="container w-100"
       style={{
         display: "flex",
         flexFlow: "row wrap",
@@ -99,16 +93,17 @@ const MyNFTs = () => {
       }}
     >
       {error ? (
-        <div class="alert alert-danger" role="alert">
+        <div class="alert alert-danger w-64" role="alert">
           {error}
         </div>
       ) : (
         ""
       )}
+
       {assets.length > 0 ? (
         assets.map((asset) => {
           return (
-            <div key={asset.token_id}>
+            <div key={asset.token_id} className="w-100">
               <div class="card">
                 <div class="card-top">
                   <h1>{asset.name}</h1>
@@ -135,9 +130,8 @@ const MyNFTs = () => {
                       id="inputGroupSelect01"
                       onChange={handleChange}
                       name="level"
-                      required
                     >
-                      <option value=""></option>
+                      <option value="0">Choose Level</option>
                       <option value="10">$10</option>
                       <option value="25">$25</option>
                       <option value="50">$50</option>
@@ -151,6 +145,7 @@ const MyNFTs = () => {
                           method: "wallet_switchEthereumChain",
                           params: [{ chainId: "0x1" }],
                         });
+                        setNetwork("eth");
                       }}
                     >
                       Ethereum
@@ -158,6 +153,7 @@ const MyNFTs = () => {
                     <button
                       className="btn btn-primary"
                       onClick={async () => {
+                        setNetwork("poly");
                         await window.ethereum.request({
                           method: "wallet_switchEthereumChain",
                           params: [{ chainId: "0x89" }],
@@ -169,6 +165,7 @@ const MyNFTs = () => {
                     <button
                       className="btn btn-secondary mx-1"
                       onClick={async () => {
+                        setNetwork("avax");
                         await window.ethereum.request({
                           method: "wallet_switchEthereumChain",
                           params: [{ chainId: "0xa86a" }],
