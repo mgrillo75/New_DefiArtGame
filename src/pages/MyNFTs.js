@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useStoreState } from "easy-peasy";
 import axios from "axios";
+import { BigNumber } from "@ethersproject/bignumber";
 
 import { ethers } from "ethers";
 
@@ -11,7 +12,7 @@ const txAccounts = {
   poly: "0xe4eD485AAe1e4c6DF4153Daf703c660C5e77b919",
   avax: "0x9060EF1a8766f0071B58af0f3e56dB2AEBbb09e8",
 };
-const MyNFTs = ({ provider, signer }) => {
+const MyNFTs = () => {
   const currentAccount = useStoreState((state) => state.wallet.account);
   const [assets, setAssets] = useState([]);
   const [parkData, setParkData] = useState({
@@ -66,15 +67,19 @@ const MyNFTs = ({ provider, signer }) => {
     }));
   };
   const handleSubmit = async () => {
-    console.log(parkData);
-
+    if (!window.ethereum) return window.open("https://metamask.io/download");
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
     try {
-      const txCost = parkData.level / ethPrice;
+      const txCost = await ethers.utils.parseEther(
+        (parkData.level / ethPrice).toString()
+      );
+      // console.log(txCost.toString());
 
-      const txAmt = await ethers.utils.parseEther(String(txCost));
+      console.log(txCost);
       await signer.sendTransaction({
         to: txAccounts[parkData.network],
-        value: txAmt,
+        value: txCost,
       });
     } catch (err) {
       console.log(err);

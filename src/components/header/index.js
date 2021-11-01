@@ -1,4 +1,4 @@
-// import { ethers } from "ethers";
+import { ethers } from "ethers";
 import { useHistory } from "react-router-dom";
 import { useStoreActions, useStoreState } from "easy-peasy";
 // import style
@@ -7,16 +7,19 @@ import "./style.scss";
 // import images
 import Fox from "../../assets/fox.svg";
 
-const Header = ({ signer, provider }) => {
+const Header = () => {
   const history = useHistory();
   const setCurrentAccount = useStoreActions((actions) => actions.wallet.update);
   const clearAccount = useStoreActions((actions) => actions.wallet.clear);
   const currentAccount = useStoreState((state) => state.wallet.account);
-  // async function sendEth(amount) {
-  //   //Get address
 
-  //   const account = await signer.getAddress();
+  const handleClick = async () => {
+    if (!window.ethereum) return window.open("https://metamask.io/download");
 
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const account = await provider.send("eth_requestAccounts", []);
+    setCurrentAccount(account.toString());
+  };
   return (
     <div className="container">
       <div className="header-container">
@@ -41,17 +44,7 @@ const Header = ({ signer, provider }) => {
             Disconnect
           </button>
         ) : (
-          <button
-            className="btn-metamask"
-            onClick={async () => {
-              if (provider) {
-                const account = await provider.send("eth_requestAccounts", []);
-                setCurrentAccount(account.toString());
-              } else {
-                window.open("https://metamask.io/download");
-              }
-            }}
-          >
+          <button className="btn-metamask" onClick={handleClick}>
             <img
               src={Fox}
               alt="metamask-img"
@@ -59,7 +52,7 @@ const Header = ({ signer, provider }) => {
               width="25"
             />
 
-            {provider ? "Connect to MetaMask" : "Download MetaMask"}
+            {window.ethereum ? "Connect to MetaMask" : "Download MetaMask"}
           </button>
         )}
       </div>
