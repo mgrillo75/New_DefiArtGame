@@ -8,12 +8,12 @@ import MainRouter from "./routes";
 const store = createStore(
   persist({
     wallet: {
-      account: "",
+      accounts: [],
       update: action((state, payload) => {
-        state.account = payload;
+        state.accounts.push(payload);
       }),
       clear: action((state) => {
-        state.account = "";
+        state.accounts = [];
       }),
     },
   })

@@ -1,4 +1,4 @@
-import { ethers } from "ethers";
+// import { ethers } from "ethers";
 import { useHistory } from "react-router-dom";
 import { useStoreActions, useStoreState } from "easy-peasy";
 // import style
@@ -7,19 +7,30 @@ import "./style.scss";
 // import images
 import Fox from "../../assets/fox.svg";
 
-const Header = () => {
+const Header = ({ signer, provider }) => {
   const history = useHistory();
   const setCurrentAccount = useStoreActions((actions) => actions.wallet.update);
   const clearAccount = useStoreActions((actions) => actions.wallet.clear);
-  const currentAccount = useStoreState((state) => state.wallet.account);
+  const currentAccount = useStoreState((state) => state.wallet.accounts);
+  // async function sendEth(amount) {
+  //   //Get address
 
-  const handleClick = async () => {
-    if (!window.ethereum) return window.open("https://metamask.io/download");
+  //   const account = await signer.getAddress();
+  //   const balance = await provider.getBalance(account);
 
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const account = await provider.send("eth_requestAccounts", []);
-    setCurrentAccount(account.toString());
-  };
+  //   if (Number(ethers.utils.formatUnits(balance, 18)) > amount) {
+  //     try {
+  //       await signer.sendTransaction({
+  //         to: currentAccount[0].toString(),
+  //         value: ethers.utils.parseEther(String(amount)),
+  //       });
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   } else {
+  //     alert("Insufficient balance to do the transfer!");
+  //   }
+  // }
   return (
     <div className="container">
       <div className="header-container">
@@ -44,7 +55,17 @@ const Header = () => {
             Disconnect
           </button>
         ) : (
-          <button className="btn-metamask" onClick={handleClick}>
+          <button
+            className="btn-metamask"
+            onClick={async () => {
+              if (provider) {
+                const account = await provider.send("eth_requestAccounts", []);
+                setCurrentAccount(account);
+              } else {
+                window.open("https://metamask.io/download");
+              }
+            }}
+          >
             <img
               src={Fox}
               alt="metamask-img"
@@ -52,7 +73,7 @@ const Header = () => {
               width="25"
             />
 
-            {window.ethereum ? "Connect to MetaMask" : "Download MetaMask"}
+            {provider ? "Connect to MetaMask" : "Download MetaMask"}
           </button>
         )}
       </div>
